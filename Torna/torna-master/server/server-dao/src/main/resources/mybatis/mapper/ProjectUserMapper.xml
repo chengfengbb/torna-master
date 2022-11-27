@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.torna.dao.mapper.ProjectUserMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO `project_user`
+        (
+            `user_id`
+            , `project_id`
+            , `role_code`
+            , gmt_create
+            , gmt_modified
+        )
+        VALUES
+        <foreach collection="items" item="data" separator="," >
+            (
+                #{data.userId}
+                ,#{data.projectId}
+                ,#{data.roleCode}
+                ,now()
+                ,now()
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        is_deleted = 0,
+        role_code = VALUES(role_code)
+    </insert>
+
+    <update id="removeProjectLeader">
+        UPDATE project_user set is_deleted=1
+        WHERE project_id=#{projectId} AND role_code=#{adminCode}
+    </update>
+
+</mapper>
